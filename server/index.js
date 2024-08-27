@@ -1,8 +1,11 @@
 const http = require("http");
+const AlbumRouter = require("./routes/AlbumRouter");
 require("dotenv").config();
 
 const app = http.createServer((req, res) => {
-  res.end("Hello world");
+  AlbumRouter.execute(req, res);
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  // res.end("Hello world");
 });
 
 app.listen(port=process.env.PORT || 8000, () => {
