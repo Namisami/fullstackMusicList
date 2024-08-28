@@ -1,22 +1,8 @@
 const AlbumController = require("../controllers/AlbumController");
+const BaseRouter = require("./BaseRouter");
 
-class AlbumRouter {
-  static #routes = [];
+const albumRouter = new BaseRouter();
 
-  static execute(req, res) {
-    const url = req.url;
-    const method = req.method;
-    
-    this.#routes.find((route) => {
-      if (route.url === url && route.method === method) return route.cb(req, res);
-    });
-  }
+albumRouter.get('', AlbumController.getAll);
 
-  static get(url, cb) {
-    this.#routes.push({ url, cb, method: "GET" });
-  }
-};
-
-AlbumRouter.get("/albums", AlbumController.getAll);
-
-module.exports = AlbumRouter;
+module.exports = albumRouter;
