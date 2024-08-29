@@ -1,24 +1,16 @@
+const { toJSON } = require("../util/toJSON");
+
 class BaseRouter {
   #routes = [];
-  #url = "";
-  
-  #isSimple() {
-    if (Array.isArray(this.#routes)) return true;
-    return false;
-  }
 
   add(url, router) {
-    if (this.#isSimple) this.#routes = {};
-    this.#routes[url] = router.getRoutes()
-    this.#url = url;
+    const newRoutes = router.getRoutes().map((route) => ({ ...route, url: `${url}${route.url}` }));
+    this.#routes = this.#routes.concat(newRoutes);
   }
 
   get(url, cb) {
-    if (this.#isSimple) {
-      this.#routes.push({ url, cb, method: "GET" });
-      return;
-    };
-    this.#routes["url"] = { url, cb, method: "GET" };
+    this.#routes.push({ url, cb, method: "GET" });
+    return;
   }
 
   getRoutes() {
@@ -29,23 +21,13 @@ class BaseRouter {
     const url = req.url;
     const method = req.method;
 
-    if (this.#isSimple()) {
-      this.#routes.find((route) => {
-        if (`${this.#url}${route.url}` === url && route.method === method) return route.cb(req, res);
-      });
-    }
-
-    const urlRoutes = this.#routes[this.#url];
-
-    if (!urlRoutes) {
-      res.statusCode = 404;
-      res.end(JSON.stringify({ message: "Page not found" }, 2, 2));
-      return;
-    };
-
-    urlRoutes.find((route) => {
-      if (`${this.#url}${route.url}` === url && route.method === method) return route.cb(req, res);
+    const route = this.#routes.find((route) => {
+      if (`${route.url}` === url && route.method === method) return route;
     });
+    if (route) return route.cb(req, res);
+
+    res.statusCode = 404;
+    return res.end(toJSON({ message: "Page not found" }));
   }
 }
 

@@ -5,11 +5,10 @@ class AlbumController {
     try {
       const albums = await Album.getAll();
       res.statusCode = 200;
-      console.log(albums);
-      res.end(JSON.stringify(albums, 2, 2));
+      res.end(albums);
     } catch (err) {
       res.statusCode = 500;
-      res.end(JSON.stringify({ message: 'Data fetching error' }, 2, 2));
+      res.end(err);
     }
   }
 };
