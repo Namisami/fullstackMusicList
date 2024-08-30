@@ -1,27 +1,35 @@
-const db = require("../database");
+const { dbQuery } = require("../database/query");
 const { toJSON } = require("../util/toJSON");
 
 class Album {
   static async getAll() {
-    try {
-      const albums = await db.any("SELECT * FROM albums;");
-      return toJSON(albums);
-    } catch(err) {
-      console.error("Error when DB query:", err);
-      if (!err.message) throw toJSON({ message: "Error fetching data" });
-      throw toJSON({ message: err.message });
-    }
+    return await dbQuery("SELECT * FROM albums;");
   }
 
   static async getById(id) {
+    const album = await dbQuery(`SELECT * FROM albums WHERE id=${id};`, false);
+    if (!album) throw new Error("No album with such id" );
+    return album;
+  }
+
+  static async create(body) {
     try {
-      const album = (await db.any(`SELECT * FROM albums WHERE id=${id};`))[0];
-      if (!album) throw new Error("No album with such id");
-      return toJSON(album);
-    } catch(err) {
-      console.error("Error when DB query:", err);
-      if (!err.message) throw toJSON({ message: "Error fetching data" });
-      throw toJSON({ message: err.message });
+      const album = await dbQuery(`INSERT INTO albums (
+        title, 
+        artist_id,
+        genre,
+        publication_date,
+        duration
+      ) VALUES (
+        '${body.title}',
+        ${body.artist_id},
+        '${body.genre}',
+        '${new Date(body.publication_date).toISOString().split('T')[0]}',
+        ${body.duration}
+      ) RETURNING *;`, false);
+      return album;
+    } catch (err) {
+      throw new Error("Validation error");
     }
   }
 };

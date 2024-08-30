@@ -1,5 +1,7 @@
 const url = require("url");
 const Album = require("../models/Album");
+const { jsonParser } = require("../parsers/jsonParser");
+const { toJSON } = require("../util/toJSON");
 
 class AlbumController {
   static async getAll(req, res) {
@@ -21,9 +23,25 @@ class AlbumController {
       res.statusCode = 200;
       res.end(albums);
     } catch (err) {
-      console.log(err);
-      res.statusCode = 500;
-      res.end(err);
+      if (err.message === "No album with such id") res.statusCode = 404;
+      else res.statusCode = 500;
+      res.end(toJSON({message: err.message }));
+    }
+  }
+
+  static async create(req, res) {
+    try {
+      const parsedReq = await jsonParser(req);
+      const body  = parsedReq.body;
+      const album = await Album.create(body);
+      console.log(album);
+      res.statusCode = 200;
+      res.end(album);
+    } catch (err) {
+      console.error(err);
+      if (err.message === "Validation error") res.statusCode = 400;
+      else res.statusCode = 500;
+      res.end(toJSON({ message: err.message }));
     }
   }
 };

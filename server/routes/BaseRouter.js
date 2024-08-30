@@ -13,6 +13,11 @@ class BaseRouter {
     return;
   }
 
+  post(url, cb) {
+    this.#routes.push({ url, cb, method: "POST" });
+    return;
+  }
+
   getRoutes() {
     return this.#routes;
   }
@@ -21,10 +26,6 @@ class BaseRouter {
     const url = req.url;
     const method = req.method;
 
-    // const route = this.#routes.find((route) => {
-    //   console.log(route);
-    //   if (`${route.url}` === url && route.method === method) return route;
-    // });
     const route = this.#findRoute(url, method);
     if (route) return route.cb(req, res);
 
