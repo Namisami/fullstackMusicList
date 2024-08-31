@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS artists (
 CREATE TABLE IF NOT EXISTS albums (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    artist_id INTEGER REFERENCES artists(id),
+    artist_id INTEGER REFERENCES artists(id) ON DELETE CASCADE,
     genre VARCHAR(255),
     publication_date DATE,
     duration INTEGER

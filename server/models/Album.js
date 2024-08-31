@@ -15,6 +15,10 @@ class Album {
 
   static async create(body) {
     try {
+      const properties = ["title", "artist_id", "genre", "publication_date", "duration"];
+      for (let value of properties) {
+        if (body[value] === undefined) throw new Error("Validation error")
+      }
       const album = await dbQuery(`INSERT INTO albums (
         title, 
         artist_id,
