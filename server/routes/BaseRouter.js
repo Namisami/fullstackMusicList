@@ -18,6 +18,16 @@ class BaseRouter {
     return;
   }
 
+  delete(url, cb) {
+    this.#routes.push({ url, cb, method: "DELETE" });
+    return;
+  }
+
+  put(url, cb) {
+    this.#routes.push({ url, cb, method: "PUT" });
+    return;
+  }
+
   getRoutes() {
     return this.#routes;
   }
@@ -43,7 +53,8 @@ class BaseRouter {
       });
 
       const regex = new RegExp(routeUrlList.join("\/"));
-      const match = url.match(regex)[0];
+      let match = url.match(regex);
+      if (match) match = match[0];
       if (match === url) return route;
     });
     return route;

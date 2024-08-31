@@ -34,8 +34,39 @@ class AlbumController {
       const parsedReq = await jsonParser(req);
       const body  = parsedReq.body;
       const album = await Album.create(body);
-      console.log(album);
+      res.statusCode = 201;
+      res.end(album);
+    } catch (err) {
+      console.error(err);
+      if (err.message === "Validation error") res.statusCode = 400;
+      else res.statusCode = 500;
+      res.end(toJSON({ message: err.message }));
+    }
+  }
+  
+  static async delete(req, res) {
+    try {
+      const parsedUrl = url.parse(req.url);
+      const id = parsedUrl.pathname.split("/")[2];
+      const deleted = await Album.delete(id);
       res.statusCode = 200;
+      res.end(deleted);
+    } catch (err) {
+      if (err.message === "No album with such id") res.statusCode = 404;
+      else res.statusCode = 500;
+      res.end(toJSON({ message: err.message }));
+    }
+  }
+
+  static async put(req, res) {
+    try {
+      const parsedUrl = url.parse(req.url);
+      const id = parsedUrl.pathname.split("/")[2];
+      const parsedReq = await jsonParser(req);
+      const body = parsedReq.body;
+      const album = await Album.put(id, body);
+      console.log(album);
+      res.statusCode = 201;
       res.end(album);
     } catch (err) {
       console.error(err);
