@@ -10,9 +10,15 @@ router.add('/artists', artistRouter);
 
 const app = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader("Content-Type", "application/json; charset=utf-8");
-  router.execute(req, res);
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204;
+    return res.end();
+  }
+  return router.execute(req, res);
 });
 
 app.listen(port=process.env.PORT || 8000, () => {
