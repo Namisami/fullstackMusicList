@@ -16,8 +16,7 @@ Coded by www.creative-tim.com
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
-import MDInput from "components/MDInput";
-import { Stack, Modal, Box, Typography } from "@mui/material";
+import { Stack, Modal, Box } from "@mui/material";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -31,6 +30,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "./style.css";
 import CreateForm from "components/CreateForm/CreateForm";
+import ChangeForm from "components/ChangeForm/ChangeForm";
 
 function Dashboard() {
   const [artists, setArtists] = useState([]);
@@ -38,6 +38,7 @@ function Dashboard() {
   const [colDefs, setColDefs] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [modalContent, setModalContent] = useState(null);
+  const [selected, setSelected] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -104,12 +105,24 @@ function Dashboard() {
       <DashboardNavbar />
       <Stack pt={1} gap={1} direction="row">
         <MDButton onClick={() => handleModal(<CreateForm onCreate={loadData} />)}>Создать</MDButton>
-        <MDButton>Изменить</MDButton>
+        {selected ? (
+          <MDButton
+            onClick={() => handleModal(<ChangeForm selected={selected} onChange={loadData} />)}
+          >
+            Изменить
+          </MDButton>
+        ) : (
+          <MDButton disabled>Изменить</MDButton>
+        )}
         <MDButton>Удалить</MDButton>
       </Stack>
       <MDBox py={3}>
         <div className="ag-theme-quartz" style={{ height: 500 }}>
-          <AgGridReact rowData={rowData} columnDefs={colDefs} />
+          <AgGridReact
+            rowData={rowData}
+            columnDefs={colDefs}
+            onRowClicked={(e) => setSelected(e.data)}
+          />
         </div>
       </MDBox>
       <Modal
@@ -119,9 +132,6 @@ function Dashboard() {
         aria-describedby="modal-modal-description"
       >
         <Box className="modal" sx={{ width: "500px" }}>
-          <Typography id="modal-modal-title" pb={2} variant="h6" component="h2">
-            Создать
-          </Typography>
           <Stack gap={1}>
             <form className="modal__form">{modalContent}</form>
           </Stack>

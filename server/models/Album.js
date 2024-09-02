@@ -4,7 +4,10 @@ const { toPgDate } = require("../util/toPgDate");
 
 class Album {
   static async getAll() {
-    return await dbQuery("SELECT * FROM albums;");
+    let albums = JSON.parse(await dbQuery("SELECT * FROM albums;"));
+    albums.sort((a, b) => a.id - b.id);
+    albums = toJSON(albums);
+    return albums;
   }
 
   static async getById(id) {
