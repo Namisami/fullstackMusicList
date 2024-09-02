@@ -100,6 +100,14 @@ function Dashboard() {
     setModalContent(content);
   };
 
+  const deleteItem = async (e) => {
+    e.preventDefault();
+    await axios
+      .delete(`http://localhost:8000/albums/${selected.id}`)
+      .then((_) => loadData())
+      .catch((err) => console.error(err));
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -114,7 +122,11 @@ function Dashboard() {
         ) : (
           <MDButton disabled>Изменить</MDButton>
         )}
-        <MDButton>Удалить</MDButton>
+        {selected ? (
+          <MDButton onClick={deleteItem}>Удалить</MDButton>
+        ) : (
+          <MDButton disabled>Удалить</MDButton>
+        )}
       </Stack>
       <MDBox py={3}>
         <div className="ag-theme-quartz" style={{ height: 500 }}>
