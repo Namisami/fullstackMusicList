@@ -115,7 +115,14 @@ function Dashboard() {
         <MDButton onClick={() => handleModal(<CreateForm onCreate={loadData} />)}>Создать</MDButton>
         {selected ? (
           <MDButton
-            onClick={() => handleModal(<ChangeForm selected={selected} onChange={loadData} />)}
+            onClick={() =>
+              handleModal(
+                <ChangeForm
+                  selected={{ ...selected, artist_id: findArtistById(selected.artist_id) }}
+                  onChange={loadData}
+                />
+              )
+            }
           >
             Изменить
           </MDButton>

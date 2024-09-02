@@ -1,3 +1,4 @@
+const db = require("../database/connect");
 const { dbQuery } = require("../database/query");
 const { toJSON } = require("../util/toJSON");
 const { toPgDate } = require("../util/toPgDate");
@@ -30,7 +31,7 @@ class Album {
         duration
       ) VALUES (
         '${body.title}',
-        ${body.artist_id},
+        ${artist_id},
         '${body.genre}',
         '${toPgDate(body.publication_date)}',
         ${body.duration}
@@ -58,9 +59,13 @@ class Album {
       for (let value of properties) {
         if (body[value] === undefined) throw new Error("Validation error")
       }
+      let artist_id = (await db.query(`SELECT id FROM artists WHERE name='${body.artist_id}';`))[0]?.id;
+      if (!artist_id) {
+        artist_id = (await db.query(`INSERT INTO artists (name) VALUES ('${body.artist_id}') RETURNING id;`))[0].id;
+      };
       const album = await dbQuery(`UPDATE albums SET
         title = '${body.title}', 
-        artist_id = ${body.artist_id},
+        artist_id = ${artist_id},
         genre = '${body.genre}',
         publication_date = '${toPgDate(body.publication_date)}',
         duration = ${body.duration}
