@@ -65,7 +65,6 @@ class AlbumController {
       const parsedReq = await jsonParser(req);
       const body = parsedReq.body;
       const album = await Album.put(id, body);
-      console.log(album);
       res.statusCode = 201;
       res.end(album);
     } catch (err) {

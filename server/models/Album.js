@@ -23,6 +23,10 @@ class Album {
       for (let value of properties) {
         if (body[value] === undefined) throw new Error("Validation error")
       }
+      let artist_id = (await db.query(`SELECT id FROM artists WHERE name='${body.artist_id}';`))[0]?.id;
+      if (!artist_id) {
+        artist_id = (await db.query(`INSERT INTO artists (name) VALUES ('${body.artist_id}') RETURNING id;`))[0].id;
+      };
       const album = await dbQuery(`INSERT INTO albums (
         title, 
         artist_id,
